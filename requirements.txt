@@ -1,0 +1,3 @@
+transformers==4.13.0
+pandas==1.3.3
+autodialer==1.0.0
