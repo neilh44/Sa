@@ -35,7 +35,7 @@ def make_call(phone_number):
 
         # Create TwiML response
         response = VoiceResponse()
-        gather = Gather(input='speech', action='/handle-response')
+        gather = Gather(input='speech', action='https://api.vapi.ai/twilio/inbound_call')
         gather.say("Hello! Do you have a requirement for cumin seeds? Please respond with yes or no.")
         response.append(gather)
 
@@ -43,7 +43,8 @@ def make_call(phone_number):
         call = client.calls.create(
             twiml=response,
             to=phone_number,
-            from_=twilio_phone_number
+            from_=twilio_phone_number,
+            status_callback='https://api.vapi.ai/twilio/status'
         )
         return call.sid
     except Exception as e:
