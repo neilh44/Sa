@@ -3,8 +3,7 @@ import csv
 from groq import Groq
 from twilio.rest import Client
 from twilio.twiml.voice_response import Gather, VoiceResponse
-from io import TextIOWrapper  # Import TextIOWrapper from the io module
-
+from io import TextIOWrapper
 
 # Set your Groq API key
 api_key = "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"
@@ -31,8 +30,11 @@ def qualify_leads(messages):
 
 # Function to validate phone numbers
 def validate_phone_number(phone_number):
-    # Your implementation goes here
-    pass
+    # Check if the phone number has 10 digits
+    if len(phone_number) == 10 and phone_number.isdigit():
+        return True
+    else:
+        return False
 
 # Function to make a call using Twilio
 def make_call(phone_number):
@@ -77,7 +79,7 @@ def main():
             phone_numbers = []
             with uploaded_file as file:
                 # Open the file in text mode explicitly
-                reader = csv.reader(TextIOWrapper(file, 'rt', encoding='utf-8'), delimiter=',')
+                reader = csv.reader(TextIOWrapper(file, 'r', encoding='utf-8'), delimiter=',')
                 next(reader)  # Skip header row
                 for row in reader:
                     phone_number = row[-1].strip()  # Extract phone number from the last column
