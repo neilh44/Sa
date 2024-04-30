@@ -73,22 +73,25 @@ def main():
         try:
             phone_numbers = []
             with uploaded_file as file:
-                # Open the file in text mode explicitly
-                reader = csv.reader(TextIOWrapper(file, 'utf-8'), delimiter=',')  # Specify delimiter if needed
+                reader = csv.reader(file, delimiter=',')
                 next(reader)  # Skip header row
                 for row in reader:
-                    phone_numbers.append(row[3])  # Assuming the contact number is in the 4th column (0-indexed)
+                    phone_number = row[-1].strip()  # Extract phone number from the last column
+                    if validate_phone_number(phone_number):
+                        phone_numbers.append(phone_number)
+                    else:
+                        st.warning(f"Invalid phone number: {phone_number}. Skipping...")
         except Exception as e:
             st.error(f"Error occurred while reading CSV file: {e}")
             return
 
-        # Make calls to each phone number
+        # Make calls to each valid phone number
         successful_calls = 0
         for phone_number in phone_numbers:
             if make_call(phone_number):
                 successful_calls += 1
 
-        st.success(f"Calls made to {successful_calls} out of {len(phone_numbers)} phone numbers!")
+        st.success(f"Calls made to {successful_calls} out of {len(phone_numbers)} valid phone numbers!")
 
 if __name__ == "__main__":
     main()
