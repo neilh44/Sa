@@ -2,11 +2,11 @@ import os
 import streamlit as st
 from groq import Groq
 
+# Set your Groq API key
+api_key = "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"
+
 # Function to qualify leads using Groq API
 def qualify_leads(messages):
-    # Retrieve the Groq API key from environment variable
-    api_key = os.getenv("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")
-
     # Initialize the Groq client with the API key
     client = Groq(api_key=api_key)
     
