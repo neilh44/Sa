@@ -1,6 +1,7 @@
 import os
 import streamlit as st
 from groq import Groq
+import json
 
 # Set your Groq API key
 api_key = "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"
@@ -13,7 +14,10 @@ def qualify_leads(messages):
     # Make API call to qualify leads
     chat_completion = client.chat.completions.create(messages=messages, model="mixtral-8x7b-32768")
     
-    return chat_completion.choices[0].message.content
+    # Convert response to JSON serializable format
+    response_json = json.dumps(chat_completion.choices[0].message.content)
+    
+    return response_json
 
 def main():
     st.title("AI Sales Agent")
