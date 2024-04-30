@@ -70,7 +70,7 @@ def main():
             phone_numbers = []
             with uploaded_file as file:
                 # Open the file in text mode explicitly
-                reader = csv.reader(TextIOWrapper(file, 'rt', encoding='utf-8'), delimiter=',')
+                reader = csv.reader(TextIOWrapper(file, encoding='utf-8'), delimiter=',')
                 next(reader)  # Skip header row
                 for row in reader:
                     phone_number = '+91' + row[-1].strip()  # Add country code and extract phone number from the last column
