@@ -41,6 +41,9 @@ def make_call(phone_number):
     try:
         client = Client(twilio_account_sid, twilio_auth_token)
 
+        # Add country code +91 to the phone number
+        phone_number = "+91" + phone_number
+
         # Create TwiML response
         response = VoiceResponse()
         gather = Gather(input='speech', action='/handle-response')
@@ -57,6 +60,7 @@ def make_call(phone_number):
     except Exception as e:
         st.error(f"Error occurred while making call to {phone_number}: {e}")
         return False
+
 
 # Function to handle response from call
 def handle_response(response):
