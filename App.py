@@ -79,7 +79,7 @@ def main():
             phone_numbers = []
             with uploaded_file as file:
                 # Open the file in text mode explicitly
-                reader = csv.reader(TextIOWrapper(file, 'r', encoding='utf-8'), delimiter=',')
+                reader = csv.reader(TextIOWrapper(file, encoding='utf-8'), delimiter=',')
                 next(reader)  # Skip header row
                 for row in reader:
                     phone_number = row[-1].strip()  # Extract phone number from the last column
