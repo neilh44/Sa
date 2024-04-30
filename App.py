@@ -3,7 +3,11 @@ import csv
 from groq import Groq
 from twilio.rest import Client
 from twilio.twiml.voice_response import Gather, VoiceResponse
+import csv
+from io import TextIOWrapper  # Import TextIOWrapper from the io module
 
+
+    
 # Set your Groq API key
 api_key = "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"
 
