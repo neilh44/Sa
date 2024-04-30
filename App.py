@@ -69,7 +69,7 @@ def main():
         try:
             phone_numbers = []
             with uploaded_file as file:
-                reader = csv.reader(file, delimiter=',')  # Specify delimiter if needed
+                reader = csv.reader(file.decode('utf-8'), delimiter=',')  # Specify delimiter if needed
                 for row in reader:
                     phone_numbers.append(row[0])
         except Exception as e:
