@@ -63,48 +63,36 @@ def make_call(phone_number):
 
 # Function to handle response from call
 def handle_response(response):
-    # Process response here
-    if response.lower() == "yes":
-        try:
-            client = Client(twilio_account_sid, twilio_auth_token)
-            response = VoiceResponse()
-            dial = Dial()
-            dial.number("+917415818295")  # Connect to the provided number
-            response.append(dial)
-            return str(response)
-        except Exception as e:
-            st.error(f"Error occurred while handling response: {e}")
-            return ""
-    else:
-        # Handle other responses or no response
-        return ""
-
-# Update the make_call function to use handle_response
-def make_call(phone_number):
     try:
-        client = Client(twilio_account_sid, twilio_auth_token)
-
-        # Add country code +91 to the phone number
-        phone_number = "+91" + phone_number
-
-        # Create TwiML response
-        response = VoiceResponse()
-        gather = Gather(input='speech', action='/handle-response')
-        gather.say("Hello! Do you have a requirement for cumin seeds? Please respond with yes or no.")
-        response.append(gather)
-
-        # Make call
-        call = client.calls.create(
-            twiml=str(response),
-            to=phone_number,
-            from_=twilio_phone_number
-        )
-        return True
+        # Process response here
+        if response.lower() == "yes":
+            try:
+                client = Client(twilio_account_sid, twilio_auth_token)
+                response = VoiceResponse()
+                dial = Dial()
+                dial.number("+91992537229")  # Connect to the provided number
+                response.append(dial)
+                return str(response), None  # Return TwiML response and no error message
+            except Exception as e:
+                error_message = f"Error occurred while handling response: {e}"
+                st.error(error_message)
+                return "", 500  # Internal Server Error
+        elif response.lower() == "no":
+            return "", None  # Return empty TwiML response and no error message
+        else:
+            # Re-ask the question if the response is not registered
+            response = VoiceResponse()
+            gather = Gather(input='speech', action='/handle-response')
+            gather.say("Sorry, I didn't catch that. Do you have a requirement for cumin seeds? Please respond with yes or no.")
+            response.append(gather)
+            return str(response), None  # Return TwiML response to re-ask the question
+    except ValueError:
+        return "", 400  # Bad Request: Invalid response
     except Exception as e:
-        st.error(f"Error occurred while making call to {phone_number}: {e}")
-        return False
-
-
+        error_message = f"Error occurred while processing response: {e}"
+        st.error(error_message)
+        return "", 500  # Internal Server Error
+        
 def main():
     st.title("AI Sales Agent")
 
