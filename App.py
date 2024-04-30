@@ -3,11 +3,9 @@ import csv
 from groq import Groq
 from twilio.rest import Client
 from twilio.twiml.voice_response import Gather, VoiceResponse
-import csv
 from io import TextIOWrapper  # Import TextIOWrapper from the io module
 
 
-    
 # Set your Groq API key
 api_key = "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"
 
@@ -30,6 +28,11 @@ def qualify_leads(messages):
     except Exception as e:
         st.error(f"Error occurred while qualifying leads: {e}")
         return []
+
+# Function to validate phone numbers
+def validate_phone_number(phone_number):
+    # Your implementation goes here
+    pass
 
 # Function to make a call using Twilio
 def make_call(phone_number):
@@ -93,3 +96,6 @@ def main():
                 successful_calls += 1
 
         st.success(f"Calls made to {successful_calls} out of {len(phone_numbers)} valid phone numbers!")
+
+if __name__ == "__main__":
+    main()
