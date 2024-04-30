@@ -10,8 +10,8 @@ def qualify_leads(messages):
     # Initialize the Groq client with the API key
     client = Groq(api_key=api_key)
     
-    # Make API call to qualify leads
-    chat_completion = client.chat.completions.create(messages=messages, model="mixtral-8x7b-32768")
+    # Make API call to qualify leads using "mistral-8b" model
+    chat_completion = client.chat.completions.create(messages=messages, model="mistral-8b")
     
     # Return the content of the response
     return chat_completion.choices[0].message.content
