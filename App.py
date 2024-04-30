@@ -1,4 +1,5 @@
 import csv
+import streamlit as st
 from groq import GroqClient
 from twilio.rest import Client
 
@@ -39,18 +40,26 @@ def send_sms(qualified_leads):
             from_=twilio_phone_number,
             to=lead['phone']
         )
-        print(f"Message sent to {lead['name']}")
+        st.write(f"Message sent to {lead['name']}")
 
-# Main function to orchestrate the process
 def main():
-    # Read contacts from CSV file
-    contacts = read_contacts('contacts.csv')
+    st.title("AI Sales Agent")
 
-    # Qualify leads using Groq API
-    qualified_leads = qualify_leads(contacts)
+    uploaded_file = st.file_uploader("Upload CSV file", type="csv")
+    if uploaded_file is not None:
+        st.write("File uploaded successfully!")
+        st.write("Processing...")
 
-    # Send SMS to qualified leads using Twilio
-    send_sms(qualified_leads)
+        # Read contacts from uploaded CSV file
+        contacts = read_contacts(uploaded_file)
+
+        # Qualify leads using Groq API
+        qualified_leads = qualify_leads(contacts)
+
+        # Send SMS to qualified leads using Twilio
+        send_sms(qualified_leads)
+        
+        st.write("Process completed!")
 
 if __name__ == "__main__":
     main()
