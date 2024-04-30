@@ -61,11 +61,49 @@ def make_call(phone_number):
         st.error(f"Error occurred while making call to {phone_number}: {e}")
         return False
 
-
 # Function to handle response from call
 def handle_response(response):
     # Process response here
-    print("Response from user:", response)
+    if response.lower() == "yes":
+        try:
+            client = Client(twilio_account_sid, twilio_auth_token)
+            response = VoiceResponse()
+            dial = Dial()
+            dial.number("+917415818295")  # Connect to the provided number
+            response.append(dial)
+            return str(response)
+        except Exception as e:
+            st.error(f"Error occurred while handling response: {e}")
+            return ""
+    else:
+        # Handle other responses or no response
+        return ""
+
+# Update the make_call function to use handle_response
+def make_call(phone_number):
+    try:
+        client = Client(twilio_account_sid, twilio_auth_token)
+
+        # Add country code +91 to the phone number
+        phone_number = "+91" + phone_number
+
+        # Create TwiML response
+        response = VoiceResponse()
+        gather = Gather(input='speech', action='/handle-response')
+        gather.say("Hello! Do you have a requirement for cumin seeds? Please respond with yes or no.")
+        response.append(gather)
+
+        # Make call
+        call = client.calls.create(
+            twiml=str(response),
+            to=phone_number,
+            from_=twilio_phone_number
+        )
+        return True
+    except Exception as e:
+        st.error(f"Error occurred while making call to {phone_number}: {e}")
+        return False
+
 
 def main():
     st.title("AI Sales Agent")
