@@ -45,10 +45,10 @@ def make_call(phone_number):
             to=phone_number,
             from_=twilio_phone_number
         )
-        return True
+        return call.sid
     except Exception as e:
         st.error(f"Error occurred while making call to {phone_number}: {e}")
-        return False
+        return None
 
 # Function to handle response from call
 def handle_response(response):
@@ -69,7 +69,7 @@ def main():
         try:
             phone_numbers = []
             with uploaded_file as file:
-                # Open the file in text mode explicitly and specify encoding parameter
+                # Open the file in text mode explicitly
                 reader = csv.reader(TextIOWrapper(file, 'rt', encoding='utf-8'), delimiter=',')
                 next(reader)  # Skip header row
                 for row in reader:
@@ -82,7 +82,11 @@ def main():
         # Make calls to each phone number
         successful_calls = 0
         for phone_number in phone_numbers:
-            if make_call(phone_number):
+            call_sid = make_call(phone_number)
+            if call_sid:
+                st.info(f"Call initiated to {phone_number}. Waiting for response...")
+                # Implement logic to capture and handle user response here
+                handle_response(call_sid)
                 successful_calls += 1
 
         st.success(f"Calls made to {successful_calls} out of {len(phone_numbers)} phone numbers!")
