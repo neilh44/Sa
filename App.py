@@ -60,7 +60,7 @@ def main():
         # Read phone numbers from uploaded CSV file
         phone_numbers = []
         with uploaded_file as file:
-            reader = csv.reader(file)
+            reader = csv.reader(file, delimiter=',')  # Specify delimiter if needed
             for row in reader:
                 phone_numbers.append(row[0])
 
@@ -69,6 +69,3 @@ def main():
             make_call(phone_number)
 
         st.write("Calls made to phone numbers!")
-
-if __name__ == "__main__":
-    main()
