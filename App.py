@@ -73,7 +73,8 @@ def main():
         try:
             phone_numbers = []
             with uploaded_file as file:
-                reader = csv.reader(file, delimiter=',')
+                # Open the file in text mode explicitly
+                reader = csv.reader(TextIOWrapper(file, 'rt', encoding='utf-8'), delimiter=',')
                 next(reader)  # Skip header row
                 for row in reader:
                     phone_number = row[-1].strip()  # Extract phone number from the last column
@@ -92,6 +93,3 @@ def main():
                 successful_calls += 1
 
         st.success(f"Calls made to {successful_calls} out of {len(phone_numbers)} valid phone numbers!")
-
-if __name__ == "__main__":
-    main()
