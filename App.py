@@ -69,12 +69,11 @@ def main():
         try:
             phone_numbers = []
             with uploaded_file as file:
-                reader = csv.DictReader(file, delimiter=',')  # Use DictReader to read column headers
+                # Open the file in text mode explicitly
+                reader = csv.reader(TextIOWrapper(file, 'utf-8'), delimiter=',')  # Specify delimiter if needed
+                next(reader)  # Skip header row
                 for row in reader:
-                    # Extract the "To" number (contact number) from the appropriate column
-                    contact_number = row.get("Contact No")  # Adjust column name as needed
-                    if contact_number:
-                        phone_numbers.append(contact_number)
+                    phone_numbers.append(row[3])  # Assuming the contact number is in the 4th column (0-indexed)
         except Exception as e:
             st.error(f"Error occurred while reading CSV file: {e}")
             return
