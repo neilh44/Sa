@@ -1,4 +1,3 @@
-import os
 import streamlit as st
 import csv
 from groq import Groq
@@ -15,31 +14,40 @@ twilio_phone_number = "+12513166471"
 
 # Function to qualify leads using Groq API
 def qualify_leads(messages):
-    # Initialize the Groq client with the API key
-    client = Groq(api_key=api_key)
-    
-    # Make API call to qualify leads using "mistral-8b" model
-    chat_completion = client.chat.completions.create(messages=messages, model="mistral-8b")
-    
-    # Return the content of the response
-    return chat_completion.choices[0].message.content
+    try:
+        # Initialize the Groq client with the API key
+        client = Groq(api_key=api_key)
+        
+        # Make API call to qualify leads using "mistral-8b" model
+        chat_completion = client.chat.completions.create(messages=messages, model="mistral-8b")
+        
+        # Return the content of the response
+        return chat_completion.choices[0].message.content
+    except Exception as e:
+        st.error(f"Error occurred while qualifying leads: {e}")
+        return []
 
 # Function to make a call using Twilio
 def make_call(phone_number):
-    client = Client(twilio_account_sid, twilio_auth_token)
+    try:
+        client = Client(twilio_account_sid, twilio_auth_token)
 
-    # Create TwiML response
-    response = VoiceResponse()
-    gather = Gather(input='speech', action='/handle-response')
-    gather.say("Hello! Do you have a requirement for cumin seeds? Please respond with yes or no.")
-    response.append(gather)
+        # Create TwiML response
+        response = VoiceResponse()
+        gather = Gather(input='speech', action='/handle-response')
+        gather.say("Hello! Do you have a requirement for cumin seeds? Please respond with yes or no.")
+        response.append(gather)
 
-    # Make call
-    call = client.calls.create(
-        twiml=response,
-        to=phone_number,
-        from_=twilio_phone_number
-    )
+        # Make call
+        call = client.calls.create(
+            twiml=response,
+            to=phone_number,
+            from_=twilio_phone_number
+        )
+        return True
+    except Exception as e:
+        st.error(f"Error occurred while making call to {phone_number}: {e}")
+        return False
 
 # Function to handle response from call
 def handle_response(response):
@@ -58,14 +66,23 @@ def main():
         st.write("Processing...")
 
         # Read phone numbers from uploaded CSV file
-        phone_numbers = []
-        with uploaded_file as file:
-            reader = csv.reader(file, delimiter=',')  # Specify delimiter if needed
-            for row in reader:
-                phone_numbers.append(row[0])
+        try:
+            phone_numbers = []
+            with uploaded_file as file:
+                reader = csv.reader(file, delimiter=',')  # Specify delimiter if needed
+                for row in reader:
+                    phone_numbers.append(row[0])
+        except Exception as e:
+            st.error(f"Error occurred while reading CSV file: {e}")
+            return
 
         # Make calls to each phone number
+        successful_calls = 0
         for phone_number in phone_numbers:
-            make_call(phone_number)
+            if make_call(phone_number):
+                successful_calls += 1
 
-        st.write("Calls made to phone numbers!")
+        st.success(f"Calls made to {successful_calls} out of {len(phone_numbers)} phone numbers!")
+
+if __name__ == "__main__":
+    main()
