@@ -4,7 +4,7 @@ from groq import Groq
 
 # Function to qualify leads using Groq API
 def qualify_leads(messages):
-    client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+    client = Groq(api_key=os.environ.get("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"))
     chat_completion = client.chat.completions.create(messages=messages, model="mixtral-8x7b-32768")
     return chat_completion.choices[0].message.content
 
