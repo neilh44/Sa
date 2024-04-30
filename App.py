@@ -26,23 +26,12 @@ def qualify_leads(messages):
         return chat_completion.choices[0].message.content
     except Exception as e:
         st.error(f"Error occurred while qualifying leads: {e}")
-        return []
-
-# Function to validate phone numbers
-def validate_phone_number(phone_number):
-    # Check if the phone number has 10 digits
-    if len(phone_number) == 10 and phone_number.isdigit():
-        return True
-    else:
-        return False
+        return None
 
 # Function to make a call using Twilio
 def make_call(phone_number):
     try:
         client = Client(twilio_account_sid, twilio_auth_token)
-
-        # Add country code +91 to the phone number
-        phone_number = "+91" + phone_number
 
         # Create TwiML response
         response = VoiceResponse()
@@ -63,42 +52,14 @@ def make_call(phone_number):
 
 # Function to handle response from call
 def handle_response(response):
-    try:
-        # Process response here
-        if response.lower() == "yes":
-            try:
-                client = Client(twilio_account_sid, twilio_auth_token)
-                response = VoiceResponse()
-                dial = Dial()
-                dial.number("+91992537229")  # Connect to the provided number
-                response.append(dial)
-                return str(response), None  # Return TwiML response and no error message
-            except Exception as e:
-                error_message = f"Error occurred while handling response: {e}"
-                st.error(error_message)
-                return "", 500  # Internal Server Error
-        elif response.lower() == "no":
-            return "", None  # Return empty TwiML response and no error message
-        else:
-            # Re-ask the question if the response is not registered
-            response = VoiceResponse()
-            gather = Gather(input='speech', action='/handle-response')
-            gather.say("Sorry, I didn't catch that. Do you have a requirement for cumin seeds? Please respond with yes or no.")
-            response.append(gather)
-            return str(response), None  # Return TwiML response to re-ask the question
-    except ValueError:
-        return "", 400  # Bad Request: Invalid response
-    except Exception as e:
-        error_message = f"Error occurred while processing response: {e}"
-        st.error(error_message)
-        return "", 500  # Internal Server Error
-        
+    # Process response here
+    print("Response from user:", response)
+
 def main():
     st.title("AI Sales Agent")
 
     # File uploader to upload CSV file with phone numbers
-    st.write("Upload CSV file with phone numbers:")
-    uploaded_file = st.file_uploader("Upload CSV file", type="csv")
+    uploaded_file = st.file_uploader("Upload CSV file with phone numbers:", type="csv")
     
     if uploaded_file is not None:
         st.write("File uploaded successfully!")
@@ -109,25 +70,22 @@ def main():
             phone_numbers = []
             with uploaded_file as file:
                 # Open the file in text mode explicitly
-                reader = csv.reader(TextIOWrapper(file, encoding='utf-8'), delimiter=',')
+                reader = csv.reader(TextIOWrapper(file, 'rt', encoding='utf-8'), delimiter=',')
                 next(reader)  # Skip header row
                 for row in reader:
-                    phone_number = row[-1].strip()  # Extract phone number from the last column
-                    if validate_phone_number(phone_number):
-                        phone_numbers.append(phone_number)
-                    else:
-                        st.warning(f"Invalid phone number: {phone_number}. Skipping...")
+                    phone_number = '+91' + row[-1].strip()  # Add country code and extract phone number from the last column
+                    phone_numbers.append(phone_number)
         except Exception as e:
             st.error(f"Error occurred while reading CSV file: {e}")
             return
 
-        # Make calls to each valid phone number
+        # Make calls to each phone number
         successful_calls = 0
         for phone_number in phone_numbers:
             if make_call(phone_number):
                 successful_calls += 1
 
-        st.success(f"Calls made to {successful_calls} out of {len(phone_numbers)} valid phone numbers!")
+        st.success(f"Calls made to {successful_calls} out of {len(phone_numbers)} phone numbers!")
 
 if __name__ == "__main__":
     main()
