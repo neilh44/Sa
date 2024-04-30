@@ -9,7 +9,7 @@ api_key = "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"
 
 # Set your Twilio credentials
 twilio_account_sid = "AC66a810449e6945a613d5161b54adf708"
-twilio_auth_token = "a53cd4fa4b79ad87f3f5ecaec10a34d6"
+twilio_auth_token = "fc81eeff7d15fe6f52bd297b54536640"
 twilio_phone_number = "+12513166471"
 
 # Function to qualify leads using Groq API
