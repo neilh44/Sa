@@ -1,65 +1,33 @@
-import csv
+import os
 import streamlit as st
-from groq import GroqClient
-from twilio.rest import Client
-
-# Function to read contacts from a CSV file
-def read_contacts(csv_file):
-    contacts = []
-    with open(csv_file, 'r') as file:
-        reader = csv.reader(file)
-        for row in reader:
-            contacts.append(row)
-    return contacts
+from groq import Groq
 
 # Function to qualify leads using Groq API
-def qualify_leads(contacts):
-    groq_client = GroqClient(api_key='YOUR_GROQ_API_KEY')
-
-    qualified_leads = []
-    for contact in contacts:
-        # Assuming you have some logic to extract relevant information from the contact
-        # and pass it to the Groq API for qualification
-        qualification_result = groq_client.qualify_lead(contact)
-        if qualification_result['qualified']:
-            qualified_leads.append(contact)
-
-    return qualified_leads
-
-# Function to send SMS using Twilio
-def send_sms(qualified_leads):
-    account_sid = 'YOUR_TWILIO_ACCOUNT_SID'
-    auth_token = 'YOUR_TWILIO_AUTH_TOKEN'
-    twilio_phone_number = 'YOUR_TWILIO_PHONE_NUMBER'
-    client = Client(account_sid, auth_token)
-
-    for lead in qualified_leads:
-        # Assuming you have a template for the SMS message
-        message = client.messages.create(
-            body=f"Hi {lead['name']}, we're excited to connect with you about our product! - YourCompanyName",
-            from_=twilio_phone_number,
-            to=lead['phone']
-        )
-        st.write(f"Message sent to {lead['name']}")
+def qualify_leads(messages):
+    client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+    chat_completion = client.chat.completions.create(messages=messages, model="mixtral-8x7b-32768")
+    return chat_completion.choices[0].message.content
 
 def main():
     st.title("AI Sales Agent")
 
+    st.write("Upload CSV file with chat messages:")
     uploaded_file = st.file_uploader("Upload CSV file", type="csv")
     if uploaded_file is not None:
         st.write("File uploaded successfully!")
         st.write("Processing...")
 
-        # Read contacts from uploaded CSV file
-        contacts = read_contacts(uploaded_file)
+        # Read chat messages from uploaded CSV file
+        messages = []
+        with uploaded_file as file:
+            for line in file:
+                messages.append({"role": "user", "content": line.strip()})
 
         # Qualify leads using Groq API
-        qualified_leads = qualify_leads(contacts)
+        response = qualify_leads(messages)
 
-        # Send SMS to qualified leads using Twilio
-        send_sms(qualified_leads)
-        
-        st.write("Process completed!")
+        st.write("Response from AI Sales Agent:")
+        st.write(response)
 
 if __name__ == "__main__":
     main()
