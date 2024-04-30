@@ -4,10 +4,6 @@ from groq import Groq
 from twilio.rest import Client
 from twilio.twiml.voice_response import Gather, VoiceResponse
 from io import TextIOWrapper
-import logging
-
-# Set up logging
-logging.basicConfig(filename='user_responses.log', level=logging.INFO, format='%(asctime)s - %(message)s')
 
 # Set your Groq API key
 api_key = "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"
@@ -56,9 +52,6 @@ def make_call(phone_number):
 
 # Function to handle response from call
 def handle_response(response):
-    # Log the user response
-    logging.info(f"User response: {response}")
-
     # Process response here
     print("Response from user:", response)
 
@@ -76,7 +69,7 @@ def main():
         try:
             phone_numbers = []
             with uploaded_file as file:
-                # Open the file in text mode explicitly
+                # Open the file in text mode explicitly and specify encoding parameter
                 reader = csv.reader(TextIOWrapper(file, 'rt', encoding='utf-8'), delimiter=',')
                 next(reader)  # Skip header row
                 for row in reader:
