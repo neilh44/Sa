@@ -1,28 +1,31 @@
-from flask import Flask, request, Response
-from twilio.twiml.voice_response import VoiceResponse
+from flask import Flask, request, jsonify
+import spacy
 
 app = Flask(__name__)
 
-@app.route('/handle-response', methods=['POST'])
-def handle_response():
-    # Parse the Twilio Voice Request
-    call_sid = request.form.get('CallSid')
-    user_response = request.form.get('SpeechResult')
+# Load spaCy model
+nlp = spacy.load("en_core_web_sm")
 
-    # Process user response (replace this with your logic)
-    if user_response:
-        # Handle user response based on your application's logic
-        print("User response:", user_response)
-        # Respond with TwiML
-        twiml_response = VoiceResponse()
-        twiml_response.say("Thank you for your response. Goodbye!")
-        return str(twiml_response), 200
-    else:
-        # If no response received, prompt user again
-        twiml_response = VoiceResponse()
-        twiml_response.say("Sorry, I didn't catch that. Please respond with yes or no.")
-        return str(twiml_response), 200
+# Define route for receiving user responses during the call
+@app.route("/twilio/inbound_call", methods=["POST"])
+def inbound_call():
+    # Get user response from Twilio request
+    user_response = request.form["SpeechResult"]
+    
+    # Analyze user response using spaCy
+    doc = nlp(user_response)
+    
+    # Process analysis results
+    # For demonstration, let's just return the entities found in the user response
+    entities = [ent.text for ent in doc.ents]
+    
+    # Prepare response
+    response = {
+        "user_response": user_response,
+        "entities": entities
+    }
+    
+    return jsonify(response)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
-  
