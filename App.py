@@ -1,32 +1,14 @@
 import streamlit as st
 import csv
-from groq import Groq
+from transformers import pipeline
 from twilio.rest import Client
 from twilio.twiml.voice_response import Gather, VoiceResponse
 from io import TextIOWrapper
-
-# Set your Groq API key
-api_key = "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"
 
 # Set your Twilio credentials
 twilio_account_sid = "AC66a810449e6945a613d5161b54adf708"
 twilio_auth_token = "4148f2ba8b790520814a3395a83b841f"
 twilio_phone_number = "+12513166471"
-
-# Function to qualify leads using Groq API
-def qualify_leads(messages):
-    try:
-        # Initialize the Groq client with the API key
-        client = Groq(api_key=api_key)
-        
-        # Make API call to qualify leads using "mistral-8b" model
-        chat_completion = client.chat.completions.create(messages=messages, model="mistral-8b")
-        
-        # Return the content of the response
-        return chat_completion.choices[0].message.content
-    except Exception as e:
-        st.error(f"Error occurred while qualifying leads: {e}")
-        return None
 
 # Function to make a call using Twilio
 def make_call(phone_number):
@@ -55,6 +37,12 @@ def make_call(phone_number):
 def handle_response(response):
     # Process response here
     print("Response from user:", response)
+    if response.lower() == "yes":
+        call_sid = make_call("+917415818295")
+        if call_sid:
+            print("Connected to sales executive.")
+    else:
+        print("Thank you for your response.")
 
 def main():
     st.title("AI Sales Agent")
