@@ -10,7 +10,7 @@ api_key = "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"
 
 # Set your Twilio credentials
 twilio_account_sid = "AC66a810449e6945a613d5161b54adf708"
-twilio_auth_token = "4148f2ba8b790520814a3395a83b841f"
+twilio_auth_token = "fc81eeff7d15fe6f52bd297b54536640"
 twilio_phone_number = "+12513166471"
 
 # Function to qualify leads using Groq API
@@ -35,7 +35,7 @@ def make_call(phone_number):
 
         # Create TwiML response
         response = VoiceResponse()
-        gather = Gather(input='speech', action='https://api.vapi.ai/twilio/inbound_call')
+        gather = Gather(input='speech', action='http://nileshhanotia.pythonanywhere.com/twilio/inbound_call')
         gather.say("Hello! Do you have a requirement for cumin seeds? Please respond with yes or no.")
         response.append(gather)
 
@@ -44,7 +44,7 @@ def make_call(phone_number):
             twiml=response,
             to=phone_number,
             from_=twilio_phone_number,
-            status_callback='https://api.vapi.ai/twilio/status'
+            status_callback='http://nileshhanotia.pythonanywhere.com/twilio/status'
         )
         return call.sid
     except Exception as e:
