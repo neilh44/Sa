@@ -1,32 +1,32 @@
 import streamlit as st
 import csv
-from groq import Groq
 from twilio.rest import Client
 from twilio.twiml.voice_response import Gather, VoiceResponse
 from io import TextIOWrapper
+import spacy
 
-# Set your Groq API key
-api_key = "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"
+# Load the English language model
+nlp = spacy.load("en_core_web_sm")
 
 # Set your Twilio credentials
 twilio_account_sid = "AC66a810449e6945a613d5161b54adf708"
 twilio_auth_token = "fc81eeff7d15fe6f52bd297b54536640"
 twilio_phone_number = "+12513166471"
 
-# Function to qualify leads using Groq API
-def qualify_leads(messages):
-    try:
-        # Initialize the Groq client with the API key
-        client = Groq(api_key=api_key)
-        
-        # Make API call to qualify leads using "mistral-8b" model
-        chat_completion = client.chat.completions.create(messages=messages, model="mistral-8b")
-        
-        # Return the content of the response
-        return chat_completion.choices[0].message.content
-    except Exception as e:
-        st.error(f"Error occurred while qualifying leads: {e}")
-        return None
+# Function to qualify leads interested in buying cumin seeds
+def qualify_lead(response):
+    doc = nlp(response)
+    
+    # Check if the response contains any keywords indicating interest in buying cumin seeds
+    if "cumin seeds" in response.lower():
+        return True
+    else:
+        # Check for synonyms or related terms
+        for token in doc:
+            if token.text.lower() in ["cumin", "spices", "cooking", "recipes"]:
+                return True
+    
+    return False
 
 # Function to make a call using Twilio
 def make_call(phone_number):
@@ -54,7 +54,11 @@ def make_call(phone_number):
 # Function to handle response from call
 def handle_response(response):
     # Process response here
-    print("Response from user:", response)
+    qualified = qualify_lead(response)
+    if qualified:
+        return "Lead is interested in buying cumin seeds!"
+    else:
+        return "Lead is not interested in buying cumin seeds."
 
 def main():
     st.title("AI Sales Agent")
@@ -87,7 +91,10 @@ def main():
             if call_sid:
                 st.info(f"Call initiated to {phone_number}. Waiting for response...")
                 # Implement logic to capture and handle user response here
-                handle_response(call_sid)
+                # For demonstration purpose, let's assume the response is "Yes" or "No"
+                response = "Yes"  # Replace with actual response received from Twilio
+                result = handle_response(response)
+                st.success(result)
                 successful_calls += 1
 
         st.success(f"Calls made to {successful_calls} out of {len(phone_numbers)} phone numbers!")
