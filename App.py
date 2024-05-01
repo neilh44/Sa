@@ -3,11 +3,16 @@ import csv
 from twilio.rest import Client
 from twilio.twiml.voice_response import Gather, VoiceResponse
 from io import TextIOWrapper
+import requests
 
 # Set your Twilio credentials
 twilio_account_sid = "AC66a810449e6945a613d5161b54adf708"
 twilio_auth_token = "fc81eeff7d15fe6f52bd297b54536640"
 twilio_phone_number = "+12513166471"
+
+# Set your Groq API key and endpoint
+GROQ_API_KEY = "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"
+GROQ_ENDPOINT = "https://api.groq.com/v1/analyze"
 
 # Function to qualify leads interested in buying cumin seeds
 def qualify_lead(response):
