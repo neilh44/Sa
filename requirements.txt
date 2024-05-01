@@ -1,7 +1,3 @@
-groq
 twilio
 streamlit 
-flask
-request
-response 
 spacy
