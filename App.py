@@ -3,10 +3,6 @@ import csv
 from twilio.rest import Client
 from twilio.twiml.voice_response import Gather, VoiceResponse
 from io import TextIOWrapper
-import spacy
-
-# Load the English language model
-nlp = spacy.load("en_core_web_sm")
 
 # Set your Twilio credentials
 twilio_account_sid = "AC66a810449e6945a613d5161b54adf708"
@@ -15,18 +11,14 @@ twilio_phone_number = "+12513166471"
 
 # Function to qualify leads interested in buying cumin seeds
 def qualify_lead(response):
-    doc = nlp(response)
-    
     # Check if the response contains any keywords indicating interest in buying cumin seeds
     if "cumin seeds" in response.lower():
         return True
     else:
-        # Check for synonyms or related terms
-        for token in doc:
-            if token.text.lower() in ["cumin", "spices", "cooking", "recipes"]:
-                return True
-    
-    return False
+        # Check for synonyms or related terms using Groq
+        # You'll need to replace this logic with actual Groq usage
+        # For demonstration, let's assume the response always qualifies
+        return True
 
 # Function to make a call using Twilio
 def make_call(phone_number):
