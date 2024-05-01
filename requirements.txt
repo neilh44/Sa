@@ -1,5 +1,4 @@
-Flask
-requests
-twilio
-spacy
-en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.0.0/en_core_web_sm-3.0.0.tar.gz
+Flask==2.1.0
+requests==2.26.0
+twilio==6.64.0
+groq==1.0.0
