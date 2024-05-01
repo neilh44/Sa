@@ -6,7 +6,7 @@ from twilio.twiml.voice_response import Gather, VoiceResponse
 from io import TextIOWrapper
 
 # Set your Groq API key
-api_key = "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"
+api_key = "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"
 
 # Set your Twilio credentials
 twilio_account_sid = "AC66a810449e6945a613d5161b54adf708"
