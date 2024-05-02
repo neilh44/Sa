@@ -7,7 +7,7 @@ from io import TextIOWrapper
 
 # Twilio credentials
 twilio_account_sid = "AC66a810449e6945a613d5161b54adf708"
-twilio_auth_token = "4148f2ba8b790520814a3395a83b841f"
+twilio_auth_token = "fc0b6f2111b1736b7947be673e5c7101"
 twilio_phone_number = "+12513166471"
 
 # Groq API key
