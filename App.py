@@ -2,7 +2,7 @@ import streamlit as st
 import csv
 import requests
 from twilio.rest import Client
-from twilio.twiml.voice_response import VoiceResponse, Gather, Say, Dial
+from twilio.twiml.voice_response import VoiceResponse, Gather, Say
 from io import TextIOWrapper
 
 # Twilio credentials
@@ -38,6 +38,28 @@ def make_call(phone_number):
         st.error(f"Error occurred while making call to {phone_number}: {e}")
         return None
 
+# Function to create a conference call between two numbers
+def create_conference_call(dialed_number):
+    try:
+        client = Client(twilio_account_sid, twilio_auth_token)
+        
+        # Create TwiML response with <Dial> verb and <Conference> noun
+        response = VoiceResponse()
+        dial = Dial()
+        dial.conference("SalesConference", beep='false', end_conference_on_exit='true')
+        response.append(dial)
+        
+        # Make a call to the dialed number and add to conference
+        call = client.calls.create(
+            to=dialed_number,
+            from_=twilio_phone_number,
+            twiml=response
+        )
+        return call.sid
+    except Exception as e:
+        st.error(f"Error occurred while creating conference call: {e}")
+        return None
+
 # Function to handle response from call
 def handle_response(response):
     try:
@@ -46,36 +68,27 @@ def handle_response(response):
             user_response = response['SpeechResult']
             st.info(f"Response from user: {user_response}")
             
-            # Generate follow-up question using Groq API
-            follow_up_question = generate_follow_up_question(user_response)
-            if follow_up_question:
-                st.info(f"Follow-up question generated: {follow_up_question}")
+            # If user responds with "yes", create a conference call
+            if user_response.lower() == "yes":
+                conference_call_sid = create_conference_call("+917046442667")
+                if conference_call_sid:
+                    st.info("Conference call initiated.")
+                else:
+                    st.error("Failed to initiate conference call.")
             else:
-                st.error("Failed to generate follow-up question")
+                # Generate follow-up question using Groq API
+                follow_up_question = generate_follow_up_question(user_response)
+                if follow_up_question:
+                    st.info(f"Follow-up question generated: {follow_up_question}")
+                else:
+                    st.error("Failed to generate follow-up question")
 
-            # Convert Groq response to voice and relay over Twilio
-            convert_and_relay(user_response)
-            
-            # If user response is 'yes', initiate a conference call
-            if user_response.lower() == 'yes':
-                initiate_conference_call()
+                # Convert Groq response to voice and relay over Twilio
+                convert_and_relay(user_response)
         else:
             st.error("No speech input found in response. Please speak clearly and try again.")
     except Exception as e:
         st.error(f"Error handling response: {e}")
-
-# Function to initiate a conference call
-def initiate_conference_call():
-    try:
-        client = Client(twilio_account_sid, twilio_auth_token)
-        call = client.calls.create(
-            to="+917046442677",  # Sales executive number
-            from_=twilio_phone_number,
-            twiml='<Response><Dial><Conference>my-conference</Conference></Dial></Response>'
-        )
-        st.info("Conference call initiated.")
-    except Exception as e:
-        st.error(f"Error initiating conference call: {e}")
 
 def main():
     st.title("AI Sales Agent")
