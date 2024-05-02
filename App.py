@@ -38,7 +38,7 @@ def make_call(phone_number):
         st.error(f"Error occurred while making call to {phone_number}: {e}")
         return None
 
-# # Function to handle response from call
+# Function to handle response from call
 def handle_response(response):
     try:
         # Check if the response contains the user's speech input
@@ -56,25 +56,9 @@ def handle_response(response):
             # Convert Groq response to voice and relay over Twilio
             convert_and_relay(user_response)
         else:
-            st.error("No speech input found in response.")
+            st.error("No speech input found in response. Please speak clearly and try again.")
     except Exception as e:
         st.error(f"Error handling response: {e}")
-
-# Function to generate follow-up question using Groq API
-def generate_follow_up_question(text):
-    try:
-        headers = {"Authorization": f"Bearer {groq_api_key}"}
-        data = {"text": text, "model": "llama3-8b-8192"}
-        response = requests.post(groq_endpoint, headers=headers, json=data)
-        if response.status_code == 200:
-            follow_up_question = response.json().get("follow_up_question", "")
-            return follow_up_question
-        else:
-            st.error(f"Groq API request failed with status code {response.status_code}")
-            return None
-    except Exception as e:
-        st.error(f"Error generating follow-up question: {e}")
-        return None
 
 # Function to convert text response to voice and relay over Twilio
 def convert_and_relay(text):
