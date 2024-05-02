@@ -38,21 +38,25 @@ def make_call(phone_number):
         st.error(f"Error occurred while making call to {phone_number}: {e}")
         return None
 
-# Function to handle response from call
+# # Function to handle response from call
 def handle_response(response):
     try:
-        user_response = response['SpeechResult']
-        st.info(f"Response from user: {user_response}")
-        
-        # Generate follow-up question using Groq API
-        follow_up_question = generate_follow_up_question(user_response)
-        if follow_up_question:
-            st.info(f"Follow-up question generated: {follow_up_question}")
-        else:
-            st.error("Failed to generate follow-up question")
+        # Check if the response contains the user's speech input
+        if 'SpeechResult' in response:
+            user_response = response['SpeechResult']
+            st.info(f"Response from user: {user_response}")
+            
+            # Generate follow-up question using Groq API
+            follow_up_question = generate_follow_up_question(user_response)
+            if follow_up_question:
+                st.info(f"Follow-up question generated: {follow_up_question}")
+            else:
+                st.error("Failed to generate follow-up question")
 
-        # Convert Groq response to voice and relay over Twilio
-        convert_and_relay(user_response)
+            # Convert Groq response to voice and relay over Twilio
+            convert_and_relay(user_response)
+        else:
+            st.error("No speech input found in response.")
     except Exception as e:
         st.error(f"Error handling response: {e}")
 
