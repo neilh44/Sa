@@ -21,7 +21,7 @@ def make_call(phone_number):
 
         # Create TwiML response
         response = VoiceResponse()
-        gather = Gather(input='speech', action='http://your_domain.com/twilio/inbound_call', method='POST')
+        gather = Gather(input='speech', action='http://nileshhanotia.pythonanywhere.com/twilio/inbound_call', method='POST')
         gather.say("Hello! Do you have a requirement for cumin seeds? Please respond with yes or no.")
         response.append(gather)
 
