@@ -1,18 +1,13 @@
 import streamlit as st
 import csv
-import requests
 from twilio.rest import Client
-from twilio.twiml.voice_response import VoiceResponse, Gather, Say
+from twilio.twiml.voice_response import VoiceResponse, Gather
 from io import TextIOWrapper
 
 # Twilio credentials
 twilio_account_sid = "AC66a810449e6945a613d5161b54adf708"
 twilio_auth_token = "4148f2ba8b790520814a3395a83b841f"
 twilio_phone_number = "+12513166471"
-
-# Groq API key
-groq_api_key = "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"
-groq_endpoint = "https://api.groq.com/v1/analyze"
 
 # Function to make a call using Twilio
 def make_call(phone_number):
@@ -33,34 +28,15 @@ def make_call(phone_number):
             status_callback='http://nileshhanotia.pythonanywhere.com/twilio/status',
             method='POST'
         )
-        return call.sid
+        
+        # Get call status code
+        status_code = call.status
+        return call.sid, status_code
     except Exception as e:
         st.error(f"Error occurred while making call to {phone_number}: {e}")
-        return None
+        return None, None
 
-# Function to create a conference call between two numbers
-def create_conference_call(dialed_number):
-    try:
-        client = Client(twilio_account_sid, twilio_auth_token)
-        
-        # Create TwiML response with <Dial> verb and <Conference> noun
-        response = VoiceResponse()
-        dial = Dial()
-        dial.conference("SalesConference", beep='false', end_conference_on_exit='true')
-        response.append(dial)
-        
-        # Make a call to the dialed number and add to conference
-        call = client.calls.create(
-            to=dialed_number,
-            from_=twilio_phone_number,
-            twiml=response
-        )
-        return call.sid
-    except Exception as e:
-        st.error(f"Error occurred while creating conference call: {e}")
-        return None
-
-# Function to handle response from call
+# Function to handle incoming call response
 def handle_response(response):
     try:
         # Check if the response contains the user's speech input
@@ -68,23 +44,8 @@ def handle_response(response):
             user_response = response['SpeechResult']
             st.info(f"Response from user: {user_response}")
             
-            # If user responds with "yes", create a conference call
-            if user_response.lower() == "yes":
-                conference_call_sid = create_conference_call("+917046442667")
-                if conference_call_sid:
-                    st.info("Conference call initiated.")
-                else:
-                    st.error("Failed to initiate conference call.")
-            else:
-                # Generate follow-up question using Groq API
-                follow_up_question = generate_follow_up_question(user_response)
-                if follow_up_question:
-                    st.info(f"Follow-up question generated: {follow_up_question}")
-                else:
-                    st.error("Failed to generate follow-up question")
-
-                # Convert Groq response to voice and relay over Twilio
-                convert_and_relay(user_response)
+            # Your logic to handle user response goes here
+            
         else:
             st.error("No speech input found in response. Please speak clearly and try again.")
     except Exception as e:
@@ -117,13 +78,14 @@ def main():
         # Make calls to each phone number
         successful_calls = 0
         for phone_number in phone_numbers:
-            call_sid = make_call(phone_number)
+            call_sid, status_code = make_call(phone_number)
             if call_sid:
                 st.info(f"Call initiated to {phone_number}. Waiting for response...")
                 # Implement logic to capture and handle user response here
                 response = {}  # Placeholder for Twilio response, to be replaced with actual response
                 handle_response(response)
                 successful_calls += 1
+                st.info(f"Call status code: {status_code}")
 
         st.success(f"Calls made to {successful_calls} out of {len(phone_numbers)} phone numbers!")
 
