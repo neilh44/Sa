@@ -2,7 +2,7 @@ import streamlit as st
 import csv
 import requests
 from twilio.rest import Client
-from twilio.twiml.voice_response import VoiceResponse, Gather, Say
+from twilio.twiml.voice_response import VoiceResponse, Gather, Say, Dial
 from io import TextIOWrapper
 
 # Twilio credentials
@@ -55,23 +55,27 @@ def handle_response(response):
 
             # Convert Groq response to voice and relay over Twilio
             convert_and_relay(user_response)
+            
+            # If user response is 'yes', initiate a conference call
+            if user_response.lower() == 'yes':
+                initiate_conference_call()
         else:
             st.error("No speech input found in response. Please speak clearly and try again.")
     except Exception as e:
         st.error(f"Error handling response: {e}")
 
-# Function to convert text response to voice and relay over Twilio
-def convert_and_relay(text):
+# Function to initiate a conference call
+def initiate_conference_call():
     try:
         client = Client(twilio_account_sid, twilio_auth_token)
         call = client.calls.create(
-            to="+917415818295",  # Sales executive number
+            to="+917046442677",  # Sales executive number
             from_=twilio_phone_number,
-            twiml=f'<Response><Say>{text}</Say></Response>'
+            twiml='<Response><Dial><Conference>my-conference</Conference></Dial></Response>'
         )
-        st.info("Response relayed to sales executive.")
+        st.info("Conference call initiated.")
     except Exception as e:
-        st.error(f"Error relaying response to sales executive: {e}")
+        st.error(f"Error initiating conference call: {e}")
 
 def main():
     st.title("AI Sales Agent")
@@ -112,3 +116,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
