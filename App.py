@@ -1,9 +1,7 @@
 from flask import Flask, request, Response
 from twilio.rest import Client
-from twilio.twiml.voice_response import VoiceResponse, Gather, Say
-from io import BytesIO, TextIOWrapper
-import streamlit as st
-from groq import Groq
+from twilio.twiml.voice_response import VoiceResponse
+import requests
 
 app = Flask(__name__)
 
@@ -27,7 +25,7 @@ def make_call(phone_number):
             twiml=response,
             to=phone_number,
             from_=twilio_phone_number,
-            status_callback='http://yourserver.com/twilio/status',
+            status_callback='http://nileshhanotia.pythonanywhere.com/twilio/status',
             method='POST'
         )
         return call.sid
@@ -100,4 +98,4 @@ def handle_call_status():
         return Response(status=500)
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=5001)  # Bind to all available network interfaces
+    app.run(debug=True, host='0.0.0.0', port=8080)  # Bind to all available network interfaces
