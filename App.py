@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 # Twilio credentials
 twilio_account_sid = "AC66a810449e6945a613d5161b54adf708"
-twilio_auth_token = "fc0b6f2111b1736b7947be673e5c7101"
+twilio_auth_token = "186ac9b8de4b75fc5e36fe41e05d4bb3"
 twilio_phone_number = "+12513166471"
 
 # Groq API key
