@@ -1,14 +1,20 @@
 from flask import Flask, request, Response
 from twilio.rest import Client
-from twilio.twiml.voice_response import VoiceResponse
-import requests
+from twilio.twiml.voice_response import VoiceResponse, Gather, Say
+from io import BytesIO, TextIOWrapper
+import streamlit as st
+from groq import Groq
 
 app = Flask(__name__)
 
 # Twilio credentials
 twilio_account_sid = "AC66a810449e6945a613d5161b54adf708"
-twilio_auth_token = "186ac9b8de4b75fc5e36fe41e05d4bb3"
+twilio_auth_token = "fc0b6f2111b1736b7947be673e5c7101"
 twilio_phone_number = "+12513166471"
+
+# Groq API key
+groq_api_key = "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"
+groq_endpoint = "https://api.groq.com/v1/analyze"
 
 # Function to make a call using Twilio
 def make_call(phone_number):
@@ -30,7 +36,7 @@ def make_call(phone_number):
         )
         return call.sid
     except Exception as e:
-        print(f"Error occurred while making call to {phone_number}: {e}")
+        st.error(f"Error occurred while making call to {phone_number}: {e}")
         return None
 
 # Function to handle recorded response from call
@@ -38,7 +44,7 @@ def handle_recorded_response(recording_url):
     try:
         # Download the recorded audio
         response = requests.get(recording_url)
-        audio_data = response.content
+        audio_data = BytesIO(response.content)
 
         # Placeholder for determining user's intent
         user_intent = "buy"  # Assuming user's intent is to buy
@@ -50,7 +56,7 @@ def handle_recorded_response(recording_url):
         for question in follow_up_questions:
             convert_and_relay(question)
     except Exception as e:
-        print(f"Error handling recorded response: {e}")
+        st.error(f"Error handling recorded response: {e}")
 
 # Function to generate follow-up questions based on user's intent
 def generate_follow_up_questions(user_intent):
@@ -62,40 +68,36 @@ def generate_follow_up_questions(user_intent):
         follow_up_questions.append("What price range are you looking at?")
     return follow_up_questions
 
-# Function to convert and relay message over Twilio
+# Function to convert Groq response to voice and relay over Twilio
 def convert_and_relay(message):
     try:
-        # Placeholder for converting message using AI model
-        # ...
+        # Use Groq API to generate response based on selected model
+        client = Groq(api_key=groq_api_key)
+        response = client.analyze.create(text=message, model="llama3-70b-8192")
+        generated_response = response.output.text
 
-        # Placeholder for relaying converted message over Twilio
-        # ...
-        pass
-    except Exception as e:
-        print(f"Error converting and relaying message: {e}")
+        # Create TwiML response to relay generated response over Twilio call
+        twiml_response = VoiceResponse()
+        twiml_response.say(generated_response)
 
-# Endpoint to handle recorded response from Twilio
-@app.route("/twilio/record_response", methods=["POST"])
-def handle_recorded_response_endpoint():
-    try:
-        recording_url = request.form.get("RecordingUrl")
-        handle_recorded_response(recording_url)
-        return Response(status=200)
+        # Return TwiML response
+        return str(twiml_response)
     except Exception as e:
-        print(f"Error handling recorded response: {e}")
-        return Response(status=500)
+        st.error(f"Error converting and relaying message: {e}")
+        return None
 
-# Endpoint to handle call status changes
-@app.route("/twilio/status", methods=["POST"])
-def handle_call_status():
-    try:
-        call_status = request.form.get("CallStatus")
-        # Handle call status (e.g., call completed)
-        # ...
-        return Response(status=200)
-    except Exception as e:
-        print(f"Error handling call status: {e}")
-        return Response(status=500)
+# Streamlit app
+def main():
+    st.title("AI Sales Agent")
+
+    # Form to input phone number
+    phone_number = st.text_input("Enter phone number (with country code):")
+
+    # Button to initiate call
+    if st.button("Make Call"):
+        call_sid = make_call(phone_number)
+        if call_sid:
+            st.info(f"Call initiated to {phone_number}. Waiting for response...")
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=8080)  # Bind to all available network interfaces
+    main()
