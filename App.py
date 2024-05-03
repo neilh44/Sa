@@ -98,4 +98,4 @@ def handle_call_status():
         return Response(status=500)
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=8080)  # Bind to all available network interfaces
+    app.run(debug=True, host='0.0.0.0', port=5001)  # Bind to all available network interfaces
