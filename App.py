@@ -24,7 +24,7 @@ def make_call(phone_number):
         # Create TwiML response with <Record> verb to record user's response
         response = VoiceResponse()
         response.say("Hello! Do you have a requirement for cumin seeds? Please respond with yes or no.")
-        response.record(action="/twilio/record_response", method="POST", max_length=10)  # Recording maximum of 10 seconds
+        response.record(action="/twilio/record_response", method="POST", max_length=05)  # Recording maximum of 10 seconds
 
         # Make call
         call = client.calls.create(
