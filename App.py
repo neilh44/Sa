@@ -5,7 +5,7 @@ from io import TextIOWrapper
 
 # Twilio credentials
 twilio_account_sid = "AC66a810449e6945a613d5161b54adf708"
-twilio_auth_token = "186ac9b8de4b75fc5e36fe41e05d4bb3"
+twilio_auth_token = "4c1c17b298f8d9691bb245e09f9e3a2e"
 twilio_phone_number = "+12513166471"
 
 # Function to make a call using Twilio
