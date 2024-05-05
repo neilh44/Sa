@@ -48,25 +48,6 @@ def transcribe_audio(audio):
         st.error(f"Error transcribing audio: {e}")
         return None
 
-# Route to handle incoming Twilio webhook requests
-@app.route('/twilio-webhook', methods=['POST'])
-def twilio_webhook():
-    try:
-        # Get audio file URL from Twilio request
-        audio_url = request.values.get('RecordingUrl')
-        
-        # Transcribe audio using OpenAI Whisper
-        transcript = transcribe_audio(audio_url)
-        
-        # Do something with the transcript
-        st.info(f"Transcript: {transcript}")
-        
-        # Respond with an empty TwiML response
-        return '', 200
-    except Exception as e:
-        st.error(f"Error handling Twilio webhook: {e}")
-        return Response(status=500)
-
 # Main function to run the Streamlit app
 def main():
     st.title("Twilio Call Transcription")
