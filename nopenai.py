@@ -52,8 +52,19 @@ def transcribe_audio(audio):
 def main():
     st.title("Twilio Call Transcription")
     
-    # Add Streamlit UI components here
-    # ...
+    # Input field to enter phone number
+    phone_number = st.text_input("Enter phone number to dial (include country code)")
+
+    # Button to initiate call
+    if st.button("Make Call"):
+        if phone_number:
+            call_sid = make_call(phone_number)
+            if call_sid:
+                st.success(f"Call initiated to {phone_number}.")
+            else:
+                st.error("Failed to initiate call.")
+        else:
+            st.warning("Please enter a phone number.")
 
 # Streamlit app logic goes here
 if __name__ == "__main__":
