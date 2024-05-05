@@ -2,7 +2,8 @@ import streamlit as st
 import csv
 from flask import Flask, request, Response
 from twilio.rest import Client
-from twilio.twiml.voice_response import VoiceResponse, Gather, Dial
+from twilio.twiml.voice_response import VoiceResponse, Gather
+from twilio.twiml.messaging_response import MessagingResponse
 from io import TextIOWrapper
 
 app = Flask(__name__)
@@ -35,13 +36,21 @@ def make_call(phone_number):
         st.error(f"Error occurred while making call to {phone_number}: {e}")
         return None
 
-# Function to handle response from call
+# Function to handle response from call or SMS
 @app.route("/twilio-webhook", methods=["POST"])
 def handle_twilio_webhook():
     try:
-        user_response = request.form.get("SpeechResult")
+        # Check if the request is a voice call or an SMS
+        if request.values.get('SpeechResult'):
+            user_response = request.values.get('SpeechResult')
+            # Handle voice call response
+            print(f"User's voice response: {user_response}")
+        else:
+            # Handle SMS response
+            user_response = request.values.get('Body')
+            print(f"User's SMS response: {user_response}")
+
         # Add your handling logic here
-        print(f"User's response: {user_response}")
         return Response(status=200)
     except Exception as e:
         st.error(f"Error handling Twilio webhook: {e}")
