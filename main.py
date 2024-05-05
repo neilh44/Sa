@@ -5,6 +5,7 @@ from twilio.rest import Client
 from twilio.twiml.voice_response import VoiceResponse, Gather
 from twilio.twiml.messaging_response import MessagingResponse
 from io import TextIOWrapper
+import requests
 
 app = Flask(__name__)
 
@@ -12,6 +13,10 @@ app = Flask(__name__)
 twilio_account_sid = "AC66a810449e6945a613d5161b54adf708"
 twilio_auth_token = "4c1c17b298f8d9691bb245e09f9e3a2e"
 twilio_phone_number = "+12513166471"
+
+# Groq API key and endpoint
+groq_api_key = "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"
+groq_endpoint = "https://api.groq.com/v1/analyze"
 
 # Function to make a call using Twilio
 def make_call(phone_number):
@@ -36,6 +41,41 @@ def make_call(phone_number):
         st.error(f"Error occurred while making call to {phone_number}: {e}")
         return None
 
+# Function to analyze user response using Groq
+def analyze_user_response(user_response):
+    try:
+        # Analyze user response using Groq
+        groq_payload = {
+            "analyze": {
+                "text": user_response,
+                "queries": [
+                    {
+                        "intent": {
+                            "name": "cumin_seeds_requirement",
+                            "examples": ["yes", "no"]
+                        }
+                    }
+                ]
+            }
+        }
+        response = requests.post(groq_endpoint, json=groq_payload, headers={"Authorization": f"Bearer {groq_api_key}"})
+        response_data = response.json()
+
+        # Get the intent detected by Groq
+        intent = response_data['results']['analyze']['intents'][0]['name']
+
+        # Process the intent and return response message
+        if intent == "cumin_seeds_requirement":
+            if user_response.lower() == "yes":
+                return "Great! We have a variety of cumin seeds available. How many kilograms do you need?"
+            elif user_response.lower() == "no":
+                return "No problem. If you have any other requirements, feel free to let us know."
+            else:
+                return "Sorry, I didn't understand your response. Can you please say 'yes' or 'no'?"
+    except Exception as e:
+        st.error(f"Error analyzing user response: {e}")
+        return "Sorry, something went wrong while processing your request."
+
 # Function to handle response from call or SMS
 @app.route("/twilio-webhook", methods=["POST"])
 def handle_twilio_webhook():
@@ -50,8 +90,18 @@ def handle_twilio_webhook():
             user_response = request.values.get('Body')
             print(f"User's SMS response: {user_response}")
 
-        # Add your handling logic here
-        return Response(status=200)
+        # Analyze user response
+        response_message = analyze_user_response(user_response)
+
+        # Respond with TwiML response
+        twilio_response = f"""
+        <?xml version="1.0" encoding="UTF-8"?>
+        <Response>
+            <Say>{response_message}</Say>
+        </Response>
+        """
+
+        return twilio_response, 200
     except Exception as e:
         st.error(f"Error handling Twilio webhook: {e}")
         return Response(status=500)
