@@ -4,4 +4,4 @@ requests
 twilio
 groq
 transformers 
-
+openai
