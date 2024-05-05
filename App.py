@@ -3,6 +3,8 @@ import csv
 from flask import Flask, request, Response
 from twilio.rest import Client
 from twilio.twiml.voice_response import VoiceResponse, Gather, Dial
+from io import TextIOWrapper
+
 
 app = Flask(__name__)
 
