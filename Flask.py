@@ -4,9 +4,9 @@ import requests
 app = Flask(__name__)
 
 # Twilio credentials
-twilio_account_sid = "your_twilio_account_sid"
-twilio_auth_token = "your_twilio_auth_token"
-twilio_phone_number = "your_twilio_phone_number"
+twilio_account_sid = "AC66a810449e6945a613d5161b54adf708"
+twilio_auth_token = "4c1c17b298f8d9691bb245e09f9e3a2e"
+twilio_phone_number = "+12513166471"
 
 # Groq API key and endpoint
 groq_api_key = "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"
