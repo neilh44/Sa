@@ -12,7 +12,7 @@ ngrok_url = "https://8020-42-105-164-136.ngrok-free.app"
 
 # Twilio credentials
 twilio_account_sid = "AC66a810449e6945a613d5161b54adf708"
-twilio_auth_token = "4c1c17b298f8d9691bb245e09f9e3a2e"
+twilio_auth_token = "e97f5403f84e7352dc0638fa5659d772"
 twilio_phone_number = "+12513166471"
 
 # Function to make a call using Twilio
