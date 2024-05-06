@@ -5,8 +5,10 @@ from twilio.rest import Client
 from twilio.twiml.voice_response import VoiceResponse, Gather, Dial
 from io import TextIOWrapper
 
-
 app = Flask(__name__)
+
+# Ngrok tunnel URL
+ngrok_url = "https://8020-42-105-164-136.ngrok-free.app"
 
 # Twilio credentials
 twilio_account_sid = "AC66a810449e6945a613d5161b54adf708"
@@ -20,7 +22,7 @@ def make_call(phone_number):
 
         # Create TwiML response with <Gather> verb to gather user's response
         response = VoiceResponse()
-        gather = Gather(input='speech', action='/twilio/record_response', method='POST')
+        gather = Gather(input='speech', action=f'{ngrok_url}/twilio/record_response', method='POST')
         gather.say("Hello! Do you have a requirement for cumin seeds? Please respond with yes or no.")
         response.append(gather)
 
