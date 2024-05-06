@@ -8,7 +8,7 @@ from io import TextIOWrapper
 app = Flask(__name__)
 
 # Ngrok tunnel URL
-ngrok_url = "https://8020-42-105-164-136.ngrok-free.app"
+ngrok_url = "https://94d9-42-105-164-136.ngrok-free.app"
 
 # Twilio credentials
 twilio_account_sid = "AC66a810449e6945a613d5161b54adf708"
