@@ -7,6 +7,8 @@ from groq import Groq
 
 app = Flask(__name__)
 
+https://94d9-42-105-164-136.ngrok-free.app
+
 # Twilio credentials
 twilio_account_sid = "AC66a810449e6945a613d5161b54adf708"
 twilio_auth_token = "fc0b6f2111b1736b7947be673e5c7101"
