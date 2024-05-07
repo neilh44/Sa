@@ -34,7 +34,7 @@ def make_call(phone_number):
             twiml=response,
             to=phone_number,
             from_=twilio_phone_number,
-            status_callback='http://nileshhanotia.pythonanywhere.com/twilio/status',
+            status_callback='https://d7eb-103-85-8-165.ngrok-free.app/twilio/status',
             method='POST'
         )
         return call.sid
