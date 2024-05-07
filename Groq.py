@@ -8,7 +8,7 @@ from groq import Groq
 app = Flask(__name__)
 
 # Ngrok tunnel URL
-https://d7eb-103-85-8-165.ngrok-free.app/
+url = "https://d7eb-103-85-8-165.ngrok-free.app/"
 
 # Twilio credentials
 twilio_account_sid = "AC66a810449e6945a613d5161b54adf708"
